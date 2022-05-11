@@ -12,9 +12,12 @@ namespace TimeLibrary
     public struct TimePeriod: IFormattable, IEquatable<TimePeriod>, IComparable<TimePeriod>
     {
         #region Fields
+        
         private readonly long _seconds;
+        
         #endregion
         #region Properties
+        
         /// <summary>
         /// Zwraca liczbę godzin.
         /// </summary>
@@ -22,6 +25,7 @@ namespace TimeLibrary
         {
             get => _seconds / 3600;
         }
+        
         /// <summary>
         /// Zwraca liczbę minut.
         /// </summary>
@@ -29,6 +33,7 @@ namespace TimeLibrary
         {
             get => (_seconds % 3600) / 60;
         }
+        
         /// <summary>
         /// Zwraca liczbę sekund.
         /// </summary>
@@ -36,6 +41,7 @@ namespace TimeLibrary
         {
             get => _seconds % 60;
         }
+        
         /// <summary>
         /// Zwraca liczbę sekund sumarycznie.
         /// </summary>
@@ -43,6 +49,7 @@ namespace TimeLibrary
         {
             get => _seconds;
         }
+        
         /// <summary>
         /// Zwraca tekstową reprezentację obiektu TimePeriod.
         /// </summary>
@@ -50,39 +57,57 @@ namespace TimeLibrary
         {
             get => ToString();
         }
+        
         #endregion
         #region Constructors
+        
         public TimePeriod(long allSeconds)
         {
-            if (allSeconds < 0) throw new ArgumentOutOfRangeException(nameof(allSeconds));
+            if (allSeconds < 0)
+                throw new ArgumentOutOfRangeException(nameof(allSeconds));
             _seconds = allSeconds;
         }
+        
         public TimePeriod(string timePeriod)
         {
             string[] numbersString = timePeriod.Split(':', StringSplitOptions.RemoveEmptyEntries);
-            if (numbersString.Length != 3) throw new FormatException("Must be in correct format [h:mm:ss].");
+            if (numbersString.Length != 3)
+                throw new FormatException("Must be in correct format [h:mm:ss].");
             int[] numbersInt = new int[3];
-            for (int i = 0; i < 3; i++) numbersInt[i] = int.Parse(numbersString[i]);
-            if (numbersInt[0] < 0) throw new ArgumentOutOfRangeException("Hours must be greater or equal to 0");
-            if (numbersInt[1] < 0 || numbersInt[1] >= 60) throw new ArgumentOutOfRangeException("Minutes must contain in range: 0 – 59");
-            if (numbersInt[2] < 0 || numbersInt[2] >= 60) throw new ArgumentOutOfRangeException("Seconds must contain in range: 0 – 59");
+            for (int i = 0; i < 3; i++)
+                numbersInt[i] = int.Parse(numbersString[i]);
+            if (numbersInt[0] < 0)
+                throw new ArgumentOutOfRangeException("Hours must be greater or equal to 0");
+            if (numbersInt[1] < 0 || numbersInt[1] >= 60)
+                throw new ArgumentOutOfRangeException("Minutes must contain in range: 0 – 59");
+            if (numbersInt[2] < 0 || numbersInt[2] >= 60)
+                throw new ArgumentOutOfRangeException("Seconds must contain in range: 0 – 59");
             _seconds = numbersInt[0] * 3600 + numbersInt[1] * 60 + numbersInt[2];
         }
+        
         public TimePeriod(long hours, long minutes)
         {
-            if (hours < 0) throw new ArgumentOutOfRangeException(nameof(hours));
-            if (minutes < 0 || minutes >= 60) throw new ArgumentOutOfRangeException(nameof(minutes));
+            if (hours < 0)
+                throw new ArgumentOutOfRangeException(nameof(hours));
+            if (minutes < 0 || minutes >= 60)
+                throw new ArgumentOutOfRangeException(nameof(minutes));
             _seconds = hours * 3600 + minutes * 60;
         }
+        
         public TimePeriod(long hours, long minutes, long seconds)
         {
-            if (hours < 0) throw new ArgumentOutOfRangeException(nameof(hours));
-            if (minutes < 0 || minutes >= 60) throw new ArgumentOutOfRangeException(nameof(minutes));
-            if (seconds < 0 || seconds >= 60) throw new ArgumentOutOfRangeException(nameof(seconds));
+            if (hours < 0)
+                throw new ArgumentOutOfRangeException(nameof(hours));
+            if (minutes < 0 || minutes >= 60)
+                throw new ArgumentOutOfRangeException(nameof(minutes));
+            if (seconds < 0 || seconds >= 60)
+                throw new ArgumentOutOfRangeException(nameof(seconds));
             _seconds = hours * 3600 + minutes * 60 + seconds;
         }
+        
         #endregion
         #region PublicMethods
+        
         /// <summary>
         /// Tekstowa reprezentacja obiektu TimePeriod.
         /// </summary>
@@ -91,6 +116,7 @@ namespace TimeLibrary
         {
             return $"{string.Format("{0:D2}", Hours)}:{string.Format("{0:00}", Minutes)}:{string.Format("{0:00}", Seconds)}";
         }
+        
         /// <summary>
         /// Tekstowa reprezentacja obiektu TimePeriod.
         /// </summary>
@@ -99,6 +125,7 @@ namespace TimeLibrary
         {
             return ToString();
         }
+        
         /// <summary>
         /// Tekstowa reprezentacja obiektu TimePeriod.
         /// </summary>
@@ -118,6 +145,7 @@ namespace TimeLibrary
             if (AllSeconds == other.AllSeconds) return true;
             else return false;
         }
+        
         /// <summary>
         /// Metoda porównawcza obiektów TimePeriod.
         /// </summary>
@@ -129,6 +157,7 @@ namespace TimeLibrary
             if (obj is not TimePeriod) return false;
             return Equals((TimePeriod)obj);
         }
+        
         /// <summary>
         /// Metoda porównawcza obiektów TimePeriod.
         /// </summary>
@@ -138,6 +167,7 @@ namespace TimeLibrary
         {
             return t1.Equals(t2);
         }
+        
         /// <summary>
         /// Metoda GetHashCode.
         /// </summary>
@@ -146,6 +176,7 @@ namespace TimeLibrary
         {
             return _seconds.GetHashCode();
         }
+        
         /// <summary>
         /// Metoda porównawcza do sortowania.
         /// </summary>
@@ -165,6 +196,7 @@ namespace TimeLibrary
         {
             return new TimePeriod(AllSeconds + other.AllSeconds);
         }
+        
         /// <summary>
         /// Metoda odejmująca obiekty TimePeriod.
         /// </summary>
@@ -175,6 +207,7 @@ namespace TimeLibrary
             if (AllSeconds - other.AllSeconds < 0) return new TimePeriod(0);
             else return new TimePeriod(AllSeconds - other.AllSeconds);
         }
+        
         /// <summary>
         /// Metoda sumująca obiekty TimePeriod i Time.
         /// </summary>
@@ -184,6 +217,7 @@ namespace TimeLibrary
         {
             return new TimePeriod(AllSeconds + other.SecondsSinceMidnight);
         }
+        
         /// <summary>
         /// Metoda odejmująca obiekty TimePeriod i Time.
         /// </summary>
@@ -195,7 +229,6 @@ namespace TimeLibrary
             else return new TimePeriod(AllSeconds - other.SecondsSinceMidnight);
         }
 
-
         /// <summary>
         /// Metoda sumująca obiekty TimePeriod.
         /// </summary>
@@ -205,6 +238,7 @@ namespace TimeLibrary
         {
             return t1.Plus(t2);
         }
+
         /// <summary>
         /// Metoda odejmująca obiekty TimePeriod.
         /// </summary>
@@ -214,6 +248,7 @@ namespace TimeLibrary
         {
             return t1.Minus(t2);
         }
+
         /// <summary>
         /// Metoda sumująca obiekty TimePeriod i Time.
         /// </summary>
@@ -223,6 +258,7 @@ namespace TimeLibrary
         {
             return t1.Plus(t2);
         }
+
         /// <summary>
         /// Metoda odejmująca obiekty TimePeriod i Time.
         /// </summary>
@@ -232,48 +268,60 @@ namespace TimeLibrary
         {
             return t1.Minus(t2);
         }
+
         #endregion
         #region Operators
+        
         public static bool operator ==(TimePeriod t1, TimePeriod t2)
         {
             return Equals(t1, t2);
         }
+        
         public static bool operator !=(TimePeriod t1, TimePeriod t2)
         {
             return !(t1 == t2);
         }
+        
         public static bool operator <(TimePeriod t1, TimePeriod t2)
         {
             return t1.AllSeconds < t1.AllSeconds;
         }
+        
         public static bool operator >(TimePeriod t1, TimePeriod t2)
         {
             return t1.AllSeconds > t2.AllSeconds;
         }
+        
         public static bool operator >=(TimePeriod t1, TimePeriod t2)
         {
             return t1.AllSeconds >= t2.AllSeconds;
         }
+        
         public static bool operator <=(TimePeriod t1, TimePeriod t2)
         {
             return t1.AllSeconds <= t2.AllSeconds;
         }
+        
         public static TimePeriod operator +(TimePeriod t1, TimePeriod t2)
         {
             return Plus(t1, t2);
         }
+        
         public static TimePeriod operator -(TimePeriod t1, TimePeriod t2)
         {
             return Minus(t1, t2);
         }
+        
         public static TimePeriod operator +(TimePeriod t1, Time t2)
         {
             return t1.Plus(t2);
         }
+        
         public static TimePeriod operator -(TimePeriod t1, Time t2)
         {
             return t1.Minus(t2);
         }
+        
         #endregion
     }
 }
