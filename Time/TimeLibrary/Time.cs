@@ -6,30 +6,45 @@ using System.Threading.Tasks;
 
 namespace TimeLibrary
 {
+    /// <summary>
+    ///  Struktura przechowująca czas w formacie hh:mm:ss.
+    /// </summary>
     public struct Time : IEquatable<Time>, IComparable<Time>, IFormattable
     {
-        // Fields
+        #region Fields
         private readonly long _seconds;
-
-        // Properties
+        #endregion
+        #region Properties
+        /// <summary>
+        /// Zwraca liczbę godzin.
+        /// </summary>
         public byte Hours
         {
             get => Convert.ToByte(_seconds / 3600);
         }
+        /// <summary>
+        /// Zwraca liczbę minut (modulo).
+        /// </summary>
         public byte Minutes
         {
             get => Convert.ToByte((_seconds % 3600) / 60);
         }
+        /// <summary>
+        /// Zwraca liczbę sekund (modulo).
+        /// </summary>
         public byte Seconds
         {
             get => Convert.ToByte(_seconds % 60);
         }
+        /// <summary>
+        /// Zwraca liczbę sekund od północy.
+        /// </summary>
         public long SecondsSinceMidnight
         {
             get => _seconds;
         }
-
-        // Creators
+        #endregion
+        #region Constructors
         public Time(long seconds)
         {
             if (seconds < 0 || seconds >= 24 * 3600) throw new ArgumentOutOfRangeException("Seconds must contain in range: 0 – 86399");
@@ -64,43 +79,86 @@ namespace TimeLibrary
             if (seconds < 0 || seconds >= 60) throw new ArgumentOutOfRangeException("Seconds must contain in range: 0 – 59");
             _seconds = hours * 3600 + minutes * 60 + seconds;
         }
-
-        // Public methods
+        #endregion
+        #region Public methods
+        /// <summary>
+        /// Reprezentacja tekstowa struktury Time.
+        /// </summary>
+        /// <returns>String w formacie hh:mm:ss</returns>
         public override string ToString()
         {
             return $"{string.Format("{0:00}", Hours)}:{string.Format("{0:00}", Minutes)}:{string.Format("{0:00}", Seconds)}";
         }
+        /// <summary>
+        /// Reprezentacja tekstowa struktury Time.
+        /// </summary>
+        /// <returns>String w formacie hh:mm:ss</returns>
         public string ToString(string? format)
         {
             return $"{string.Format("{0:00}", Hours)}:{string.Format("{0:00}", Minutes)}:{string.Format("{0:00}", Seconds)}";
         }
+        /// <summary>
+        /// Reprezentacja tekstowa struktury Time.
+        /// </summary>
+        /// <returns>String w formacie hh:mm:ss</returns>
         public string ToString(string? format, IFormatProvider? formatProvider)
         {
             return $"{string.Format("{0:00}", Hours)}:{string.Format("{0:00}", Minutes)}:{string.Format("{0:00}", Seconds)}";
         }
+
+        /// <summary>
+        /// Metoda powrównawcza struktur Time.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>true, jeśli obiekty są takie same.</returns>
         public bool Equals(Time other)
         {
             if (SecondsSinceMidnight == other.SecondsSinceMidnight) return true;
             else return false;
         }
+        /// <summary>
+        /// Metoda powrównawcza struktur Time.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>true, jeśli obiekty są takie same.</returns>
         public override bool Equals(object? obj)
         {
             if (obj == null) return false;
             if (obj is not Time) return false;
             return Equals((Time)obj);
         }
+        /// <summary>
+        /// Metoda powrównawcza struktur Time.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>true, jeśli obiekty są takie same.</returns>
         public static bool Equals(Time t1, Time t2)
         {
             return t1.Equals(t2);
         }
+        /// <summary>
+        /// Metoda GetHashCode.
+        /// </summary>
+        /// <returns>HashCode na podstawie liczby sekund.</returns>
         public override int GetHashCode()
         {
             return _seconds.GetHashCode();
         }
+        /// <summary>
+        /// Metoda porównawcza do sortowania.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>-1, 0 lub 1</returns>
         public int CompareTo(Time other)
         {
             return SecondsSinceMidnight.CompareTo(other.SecondsSinceMidnight);
         }
+
+        /// <summary>
+        /// Metoda sumująca.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>sumę dwóch obiektów Time.</returns>
         public Time Plus(Time other)
         {
             long temporal = SecondsSinceMidnight + other.SecondsSinceMidnight >= 24 * 3600 ?
@@ -108,13 +166,82 @@ namespace TimeLibrary
                 SecondsSinceMidnight + other.SecondsSinceMidnight;
             return new Time(temporal);
         }
+        /// <summary>
+        /// Metoda sumująca obiekty Time oraz TimePeriod.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>sumę obiektów Time i TimePeriod jako obiekt Time.</returns>
+        public Time Plus(TimePeriod other)
+        {
+            long temporal = SecondsSinceMidnight + other.AllSeconds;
+            while (temporal >= 24 * 3600) temporal -= 24 * 3600;
+            return new Time(temporal);
+        }
+        /// <summary>
+        /// Metoda odejmująca.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>różnicę dwóch obiektów Time.</returns>
+        public Time Minus(Time other)
+        {
+            long temporal = SecondsSinceMidnight - other.SecondsSinceMidnight < 0 ?
+                SecondsSinceMidnight - other.SecondsSinceMidnight + 24 * 3600 :
+                SecondsSinceMidnight - other.SecondsSinceMidnight;
+            
+            return new Time(temporal);
+        }
+        /// <summary>
+        /// Metoda odejmująca.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>różnicę obiektów Time i TimePeriod jako obiekt Time.</returns>
+        public Time Minus(TimePeriod other)
+        {
+            long temporal = SecondsSinceMidnight - other.AllSeconds;
+            while (temporal < 0) temporal += 24 * 3600;
+
+            return new Time(temporal);
+        }
+
+        /// <summary>
+        /// Metoda sumująca.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>sumę dwóch obiektów Time.</returns>
         public static Time Plus(Time t1, Time t2)
         {
             return t1.Plus(t2);
         }
-        
-
-        // Operators
+        /// <summary>
+        /// Metoda sumująca obiekty Time oraz TimePeriod.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>sumę obiektów Time i TimePeriod jako obiekt Time.</returns>
+        public static Time Plus(Time t1, TimePeriod t2)
+        {
+            return t1.Plus(t2);
+        }
+        /// <summary>
+        /// Metoda odejmująca.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>różnicę dwóch obiektów Time.</returns>
+        public static Time Minus(Time t1, Time t2)
+        {
+            return t1.Minus(t2);
+        }
+        /// <summary>
+        /// Metoda odejmująca.
+        /// </summary>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns>różnicę obiektów Time i TimePeriod jako obiekt Time.</returns>
+        public static Time Minus(Time t1, TimePeriod t2)
+        {
+            return t1.Minus(t2);
+        }
+        #endregion
+        #region Operators
         public static bool operator ==(Time t1, Time t2)
         {
             return t1.Equals(t2);
@@ -143,5 +270,18 @@ namespace TimeLibrary
         {
             return t1.Plus(t2);
         }
+        public static Time operator +(Time t1, TimePeriod t2)
+        {
+            return t1.Plus(t2);
+        }
+        public static Time operator -(Time t1, Time t2)
+        {
+            return t1.Minus(t2);
+        }
+        public static Time operator -(Time t1, TimePeriod t2)
+        {
+            return t1.Minus(t2);
+        }
+        #endregion
     }
 }
